@@ -8,8 +8,8 @@ export default function App() {
   const [subtotal, setSubtotal] = useState(0);
   const [issues, setIssues] = useState([]);
 
-  function addIssue(severity) {
-    setIssues((prev) => [...prev, { id: crypto.randomUUID(), severity }]);
+  function addIssue(name, severity) {
+    setIssues((prev) => [...prev, { id: crypto.randomUUID(), name, severity }]);
   }
 
   function removeIssue(id) {
@@ -56,8 +56,8 @@ export default function App() {
           <p className="font-semibold mb-1">Example:</p>
           <p>
             Subtotal = $1,000 · Issues = [Medium, Medium, High]
-            → Medium (2+) = 20% = $200, High (2+) = 30% = $300
-            → <strong>Total Discount = $500 · Final = $500</strong>
+            → Medium (2+) = 20% = $200, High (2+) = 50% = $500
+            → <strong>Total Discount = $700 · Final = $300</strong>
           </p>
         </div>
       </main>

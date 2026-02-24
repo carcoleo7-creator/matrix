@@ -1,20 +1,21 @@
 /**
  * Severity matrix discount rules:
- *   Low (any count): 5% (fixed, no accumulation)
- *   Medium (1):      10%
- *   Medium (2+):     20%
- *   High (1):        15%
- *   High (2+):       30%
+ *   Low (1):        0% (apology only)
+ *   Low (2+):       10%
+ *   Medium (1):     10%
+ *   Medium (2+):    20%
+ *   High (1):       20%
+ *   High (2+):      50%
  */
 
-const SEVERITY_RULES = {
-  Low:    { single: 5,  multiple: 5  },
+export const SEVERITY_RULES = {
+  Low:    { single: 0,  multiple: 10 },
   Medium: { single: 10, multiple: 20 },
-  High:   { single: 15, multiple: 30 },
+  High:   { single: 20, multiple: 50 },
 };
 
 /**
- * @param {Array<{id: string, severity: 'Low'|'Medium'|'High'}>} issues
+ * @param {Array<{id: string, name: string, severity: 'Low'|'Medium'|'High'}>} issues
  * @param {number} subtotal
  * @returns {{
  *   subtotal: number,
@@ -37,6 +38,7 @@ export function calculateDiscount(issues, subtotal) {
     if (count === 0) continue;
     const rule = SEVERITY_RULES[severity];
     const pct = count >= 2 ? rule.multiple : rule.single;
+    if (pct === 0) continue; // single Low = apology only, no monetary discount row
     breakdown.push({ severity, count, pct, amount: Math.round((subtotal * pct) / 100 * 100) / 100 });
   }
 
