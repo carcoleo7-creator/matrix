@@ -1,4 +1,4 @@
-import { SEVERITY_RULES } from '../utils/calculations.js';
+import { getDiscountPercent } from '../utils/rulesEngine.js';
 
 const SEVERITY_STYLES = {
   Low:    { badge: 'bg-green-100 text-green-800',   dot: 'bg-green-500' },
@@ -6,14 +6,13 @@ const SEVERITY_STYLES = {
   High:   { badge: 'bg-red-100 text-red-800',       dot: 'bg-red-500' },
 };
 
-function getEffectivePct(severity, counts) {
+function getEffectivePct(rules, severity, counts) {
   const count = counts[severity] || 0;
   if (count === 0) return 0;
-  const rule = SEVERITY_RULES[severity];
-  return count >= 2 ? rule.multiple : rule.single;
+  return getDiscountPercent(rules, { severity, count, subtotal: 1 });
 }
 
-export default function IssueList({ issues, onRemove }) {
+export default function IssueList({ issues, rules = [], onRemove }) {
   if (issues.length === 0) {
     return (
       <p className="text-sm text-gray-400 italic py-2">
@@ -51,7 +50,7 @@ export default function IssueList({ issues, onRemove }) {
           <tbody>
             {issues.map((issue, idx) => {
               const styles = SEVERITY_STYLES[issue.severity];
-              const pct = getEffectivePct(issue.severity, counts);
+              const pct = getEffectivePct(rules, issue.severity, counts);
               const weightLabel = pct === 0 ? '0% (apology)' : `${pct}%`;
 
               return (

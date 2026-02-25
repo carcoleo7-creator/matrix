@@ -4,7 +4,7 @@ import IssueList from './IssueList.jsx';
 
 const SEVERITIES = ['Low', 'Medium', 'High'];
 
-export default function IssueManager({ issues, onAdd, onRemove }) {
+export default function IssueManager({ issues, rules = [], onAdd, onRemove }) {
   const [selectedCatalogId, setSelectedCatalogId] = useState(ISSUE_CATALOG[0].id);
   const [severity, setSeverity] = useState(ISSUE_CATALOG[0].defaultSeverity);
 
@@ -69,7 +69,7 @@ export default function IssueManager({ issues, onAdd, onRemove }) {
       </div>
 
       {/* Issue list */}
-      <IssueList issues={issues} onRemove={onRemove} />
+      <IssueList issues={issues} rules={rules} onRemove={onRemove} />
     </div>
   );
 }
