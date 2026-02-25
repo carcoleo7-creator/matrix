@@ -86,6 +86,41 @@ function _snapshot(rules, meta) {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 30)));
 }
 
+// ---------------------------------------------------------------------------
+// Password protection
+// SHA-256 of "admin" — used when no custom password has been set yet.
+// ---------------------------------------------------------------------------
+const PASSWORD_KEY  = 'comp_rules_password_hash';
+const DEFAULT_HASH  = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918';
+
+async function _sha256(text) {
+  const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+export function getPasswordHash() {
+  return localStorage.getItem(PASSWORD_KEY) || DEFAULT_HASH;
+}
+
+/** Returns true if `password` matches the stored hash. */
+export async function verifyPassword(password) {
+  return (await _sha256(password)) === getPasswordHash();
+}
+
+/** Hashes and persists a new password. */
+export async function setPassword(newPassword) {
+  localStorage.setItem(PASSWORD_KEY, await _sha256(newPassword));
+}
+
+/** True when a custom password has been saved (i.e. not relying on the default). */
+export function hasCustomPassword() {
+  return !!localStorage.getItem(PASSWORD_KEY);
+}
+
+// ---------------------------------------------------------------------------
+
 /** Restore a snapshot by id. Saves the current rules as a new snapshot first. */
 export function restoreSnapshot(snapshotId) {
   const snap = getHistory().find((s) => s.id === snapshotId);

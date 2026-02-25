@@ -5,12 +5,14 @@ import SubtotalInput from './components/SubtotalInput.jsx';
 import IssueManager  from './components/IssueManager.jsx';
 import DiscountResults from './components/DiscountResults.jsx';
 import RulesAdmin    from './components/RulesAdmin/index.jsx';
+import PasswordGate  from './components/RulesAdmin/PasswordGate.jsx';
 
 export default function App() {
   const [subtotal,  setSubtotal]  = useState(0);
   const [issues,    setIssues]    = useState([]);
   const [rules,     setRules]     = useState(getRules);
-  const [activeTab, setActiveTab] = useState('calculator');
+  const [activeTab,    setActiveTab]    = useState('calculator');
+  const [rulesUnlocked, setRulesUnlocked] = useState(false);
 
   function addIssue(name, severity) {
     setIssues((prev) => [...prev, { id: crypto.randomUUID(), name, severity }]);
@@ -99,8 +101,13 @@ export default function App() {
               </p>
             </div>
           </>
+        ) : rulesUnlocked ? (
+          <RulesAdmin
+            onRulesChange={setRules}
+            onLock={() => setRulesUnlocked(false)}
+          />
         ) : (
-          <RulesAdmin onRulesChange={setRules} />
+          <PasswordGate onUnlock={() => setRulesUnlocked(true)} />
         )}
       </main>
     </div>
